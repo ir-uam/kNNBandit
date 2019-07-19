@@ -30,7 +30,7 @@
         </dependency>
         <dependency>
             <groupId>org.ranksys</groupId>
-            <artifactId>Ranksys-nn</artifactId>
+            <artifactId>RankSys-nn</artifactId>
             <version>0.4.3</version>
         </dependency>
         <dependency>
