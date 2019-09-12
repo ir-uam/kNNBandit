@@ -118,7 +118,7 @@ where:
  - `beta` is the initial number of errors of the algorithm (high value for pessimistic start).
   
 ### Random seed
-It is possible to set a random seed for the experiments, so that the selection of users and other random choices are the same when the experiment is repeated. For that purpose, in the output directory, just add a file named `rngseed` containing the seed in the first line, and set the parameter `resume` to true.
+It is possible to set a random seed for the experiments, so that the selection of users and other random choices are the same when the experiment is repeated. For that purpose, in the output directory, just add a file named `rngseed` (without any file extension) containing the seed in the first line, and set the parameter `resume` to true. We include the random seeds we used in our experiments in the rng-seeds folder. In order to use them, they have to be renamed when added to the output directory.
 
 ### Output format
 The output of both programs is the same: for each algorithm in the comparison, a file will be created. The name of the file will be the same as the chosen algorithm configuration. Each of the output files has the following format: separated by tabs, the first line contains the header of the file. Then, each row contains the information of a single iteration: the number of the iteration, the selected user, the selected item, the value of the metrics and the time taken to execute the iteration (in ms.)
