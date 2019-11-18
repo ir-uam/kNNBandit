@@ -136,8 +136,7 @@ public class RecommendationLoop<U,I>
     public boolean hasEnded()
     {
         if(numUsers == 0) return true;
-        if(nIter > 0 && this.iteration >= nIter) return true;
-        return false;
+        return nIter > 0 && this.iteration >= nIter;
     }
 
     /**
@@ -185,9 +184,12 @@ public class RecommendationLoop<U,I>
             // If the user cannot be recommended another item.
             if(iidx != -1)
             {
+                cont = true;
+            }
+            else
+            {
                 this.numUsers--;
                 this.userList.remove(index);
-                cont = true;
             }
         }
         while(!cont && this.numUsers > 0);
