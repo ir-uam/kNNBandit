@@ -131,7 +131,7 @@ public class InteractiveRecommendation
             String line;
             while((line = br.readLine()) != null)
             {
-                String split[] = line.split("\t");
+                String[] split = line.split("\t");
                 Long user = Parsers.lp.parse(split[0]);
                 Long item = Parsers.lp.parse(split[1]);
                 double val = Parsers.dp.parse(split[2]);
@@ -175,7 +175,7 @@ public class InteractiveRecommendation
             InteractiveRecommender<Long,Long> rec = re.getValue();
             Map<String, CumulativeMetric<Long,Long>> localMetrics = new HashMap<>();
             metricNames.forEach(name -> localMetrics.put(name, metrics.get(name).get()));
-            RecommendationLoop<Long, Long> loop = new RecommendationLoop<>(uIndex, iIndex, rec, localMetrics, numIter,0);
+            RecommendationLoop<Long, Long> loop = new RecommendationLoop<>(uIndex, iIndex, prefData, rec, localMetrics, numIter,0);
 
             List<Tuple3<Long,Long,Long>> list = new ArrayList<>();
             String fileName = output + re.getKey() + ".txt";

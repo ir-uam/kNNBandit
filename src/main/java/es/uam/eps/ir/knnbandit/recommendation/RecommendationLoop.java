@@ -12,6 +12,9 @@ package es.uam.eps.ir.knnbandit.recommendation;
 import es.uam.eps.ir.knnbandit.metrics.CumulativeMetric;
 import es.uam.eps.ir.ranksys.fast.index.FastItemIndex;
 import es.uam.eps.ir.ranksys.fast.index.FastUserIndex;
+import es.uam.eps.ir.ranksys.fast.preference.FastPreferenceData;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import org.jooq.lambda.tuple.Tuple2;
 
 import java.util.*;
@@ -62,6 +65,14 @@ public class RecommendationLoop<U,I>
      * Total number of iterations.
      */
     private final int nIter;
+    /**
+     * Preference data.
+     */
+    private final FastPreferenceData<U,I> prefData;
+    /**
+     * List of users to be recommended
+     */
+    private final IntList userList;
 
     /**
      * Constructor. Uses 0 as the default random seed.
@@ -71,15 +82,20 @@ public class RecommendationLoop<U,I>
      * @param metrics The map of metrics.
      * @param nIter Total number of iterations. 0 for iterating until no more recommendations can be done.
      */
-    public RecommendationLoop(FastUserIndex<U> userIndex, FastItemIndex<I> itemIndex, InteractiveRecommender<U,I> recommender, Map<String, CumulativeMetric<U,I>> metrics, int nIter)
+    public RecommendationLoop(FastUserIndex<U> userIndex, FastItemIndex<I> itemIndex,  FastPreferenceData<U,I> prefData, InteractiveRecommender<U,I> recommender, Map<String, CumulativeMetric<U,I>> metrics, int nIter)
     {
         this.userIndex = userIndex;
         this.itemIndex = itemIndex;
+        this.prefData = prefData;
+
         this.recommender = recommender;
         this.metrics = metrics;
-        this.numUsers = userIndex.numUsers();
-        this.rngSeed = 0;
 
+        this.userList = new IntArrayList();
+        this.prefData.getUidxWithPreferences().forEach(userList::add);
+        this.numUsers = userList.size();
+
+        this.rngSeed = 0;
         this.nIter = nIter;
         rng = new Random(rngSeed);
         this.iteration = 0;
@@ -94,14 +110,20 @@ public class RecommendationLoop<U,I>
      * @param nIter Total number of iterations. 0 for iterating until no more recommendations can be done.
      * @param rngSeed seed for a random number generator.
      */
-    public RecommendationLoop(FastUserIndex<U> userIndex, FastItemIndex<I> itemIndex, InteractiveRecommender<U,I> recommender, Map<String, CumulativeMetric<U,I>> metrics, int nIter, int rngSeed)
+    public RecommendationLoop(FastUserIndex<U> userIndex, FastItemIndex<I> itemIndex, FastPreferenceData<U,I> prefData, InteractiveRecommender<U,I> recommender, Map<String, CumulativeMetric<U,I>> metrics, int nIter, int rngSeed)
     {
         this.userIndex = userIndex;
         this.itemIndex = itemIndex;
+        this.prefData = prefData;
+
         this.recommender = recommender;
         this.metrics = metrics;
-        this.numUsers = userIndex.numUsers();
-        this.rngSeed = 0;
+
+        this.userList = new IntArrayList();
+        this.prefData.getUidxWithPreferences().forEach(userList::add);
+        this.numUsers = userList.size();
+
+        this.rngSeed = rngSeed;
         rng = new Random(rngSeed);
         this.nIter = nIter;
         this.iteration = 0;
@@ -157,11 +179,14 @@ public class RecommendationLoop<U,I>
         int iidx;
         do
         {
-            uidx = rng.nextInt(numUsers);
+            int index = rng.nextInt(numUsers);
+            uidx = this.userList.get(index);
             iidx = recommender.next(uidx);
             // If the user cannot be recommended another item.
             if(iidx != -1)
             {
+                this.numUsers--;
+                this.userList.remove(index);
                 cont = true;
             }
         }

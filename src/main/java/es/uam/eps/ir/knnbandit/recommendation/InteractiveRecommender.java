@@ -168,30 +168,50 @@ public abstract class InteractiveRecommender<U,I>
      */
     public void update(int uidx, int iidx)
     {
-        Optional<IdxPref> realvalue = this.prefData.getPreference(uidx, iidx);
-        double value = realvalue.isPresent() ? realvalue.get().v2 : 0.0;
-        if(!this.ignoreUnknown || realvalue.isPresent())
+        double value;
+        boolean isPresent;
+
+        if(this.prefData.numUsers(iidx) > 0 && this.prefData.numItems(uidx) > 0)
+        {
+            Optional<IdxPref> realvalue = this.prefData.getPreference(uidx, iidx);
+            value = realvalue.isPresent() ? realvalue.get().v2 : 0.0;
+            isPresent = realvalue.isPresent();
+        }
+        else
+        {
+            value = 0.0;
+            isPresent = false;
+        }
+
+        if(!this.ignoreUnknown || isPresent)
         {
             this.updateMethod(uidx, iidx, value);
             this.trainData.updateRating(uidx, iidx, value);
         }
         this.availability.get(uidx).removeInt(this.availability.get(uidx).indexOf(iidx));
-        
+
+
         if(this.notReciprocal && value > 1.0) // If the link exists...
         {
-
-            if(this.prefData.numItems(iidx) > 0)
+            if(this.prefData.numUsers(iidx) > 0 && this.prefData.numItems(uidx) > 0)
             {
-                realvalue = this.prefData.getPreference(iidx, uidx);
+                Optional<IdxPref> realvalue = this.prefData.getPreference(uidx, iidx);
                 value = realvalue.isPresent() ? realvalue.get().v2 : 0.0;
-                if(!this.ignoreUnknown || realvalue.isPresent())
-                {
-                    this.updateMethod(iidx, uidx, value);
-                    this.trainData.updateRating(iidx, uidx, value);
-                }
+                isPresent = realvalue.isPresent();
             }
-            this.availability.get(iidx).removeInt(this.availability.get(iidx).indexOf(uidx));
+            else
+            {
+                value = 0.0;
+                isPresent = false;
+            }
 
+            if(!this.ignoreUnknown || isPresent)
+            {
+                this.updateMethod(iidx, uidx, value);
+                this.trainData.updateRating(iidx, uidx, value);
+            }
+
+            this.availability.get(iidx).removeInt(this.availability.get(iidx).indexOf(uidx));
         }
     }
 
@@ -213,9 +233,21 @@ public abstract class InteractiveRecommender<U,I>
         for(Tuple2<Integer, Integer> tuple : train)
         {
             int uidx = tuple.v1; int iidx = tuple.v2;
-            Optional<IdxPref> realvalue = this.prefData.getPreference(uidx, iidx);
-            double value = realvalue.isPresent() ? realvalue.get().v2 : 0.0;
-            if(!this.ignoreUnknown || realvalue.isPresent())
+            double value;
+            boolean isPresent;
+            if(this.prefData.numUsers(iidx) > 0 && this.prefData.numItems(uidx) > 0)
+            {
+                Optional<IdxPref> realvalue = this.prefData.getPreference(uidx, iidx);
+                value = realvalue.isPresent() ? realvalue.get().v2 : 0.0;
+                isPresent = realvalue.isPresent();
+            }
+            else
+            {
+                value = 0.0;
+                isPresent = false;
+            }
+
+            if(!this.ignoreUnknown || isPresent)
             {
                 tuples.add(new Tuple3<>(uidx,iidx,value));
                 this.trainData.updateRating(uidx, iidx, value);
@@ -226,17 +258,24 @@ public abstract class InteractiveRecommender<U,I>
             
             if(this.notReciprocal)
             {
-                if(this.prefData.numItems(iidx) > 0)
+                if(this.prefData.numUsers(iidx) > 0 && this.prefData.numItems(uidx) > 0)
                 {
-                    realvalue = this.prefData.getPreference(iidx, uidx);
+                    Optional<IdxPref> realvalue = this.prefData.getPreference(uidx, iidx);
                     value = realvalue.isPresent() ? realvalue.get().v2 : 0.0;
-                    if(!this.ignoreUnknown || realvalue.isPresent())
-                    {
-                        tuples.add(new Tuple3<>(iidx,uidx,value));
-                        this.trainData.updateRating(iidx, uidx, value);
-                    }
+                    isPresent = realvalue.isPresent();
                 }
-                
+                else
+                {
+                    value = 0.0;
+                    isPresent = false;
+                }
+
+                if(!this.ignoreUnknown || isPresent)
+                {
+                    tuples.add(new Tuple3<>(iidx,uidx,value));
+                    this.trainData.updateRating(iidx, uidx, value);
+                }
+
                 if(this.availability.get(iidx).contains(uidx))
                     this.availability.get(iidx).removeInt(this.availability.get(iidx).indexOf(uidx));
             }
