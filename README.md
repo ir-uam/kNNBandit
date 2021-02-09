@@ -47,7 +47,7 @@ In order to install this program, you need to have Maven (https://maven.apache.o
 mvn compile assembly::single
 ```
 If you do not want to use Maven, it is still possible to compile the code using any Java compiler. In that case, you will need the following libraries:
-- Ranksys version 0.4.3: http://ranksys.org
+- Ranksys version 0.4.3: http://ranksys.github.io
 - Colt version 1.2.0: https://dst.lbl.gov/ACSSoftware/colt
 - Google MTJ version 1.0.4: https://github.com/fommil/matrix-toolkits-java
 
