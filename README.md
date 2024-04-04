@@ -65,12 +65,12 @@ where the command line arguments are:
   - `numIter`: The number of iterations to run for each algorithm. Use value `0` for running until no new items can be recommended.
   - `threshold`: Relevance threshold. Ratings greater than or equal to this value will be considered as relevant.
   - `resume`: Set value to `true` to resume execution following up from the output of a previous execution (if any) or `false` to overwrite and start the interactive recommendation cycle from scratch.
-  - `binarize`: Set value to `true` for using binarized rating values (1 for relevant, 0 for non-relevant), `false` to leave rating values as are.
+  - `useRatings`: Set value to `false` for using binarized rating values (1 for relevant, 0 for non-relevant), `true` to leave rating values as are.
   
 For reproducing the exact experiments of the paper, program argument values are:
 - `numIter = 500000` for Foursquare-NY, `numIter = 1000000` for Foursquare-Tokyo and `numIter = 3000000` for MovieLens1M.
 - `threshold = 1` for Foursquare and `threshold = 4` for MovieLens1M.
-- `binarize = true` for all datasets.
+- `useRatings = false` for all datasets.
 
 ### Contact recommendation
 ```
@@ -100,12 +100,12 @@ random
 average
 ubknn-100
 knnbandit-1-1-10
-mf-10-fastimf-10-10-20
+mf-10-fastimf-10-10-20-true
 itembandit-epsilon-0.2-stationary
 itembandit-thompson-1-100
 ```
 
-In the above configuration file example, we choose different algorithms ot be run (each with specific parameter settings): popularity, random recommendation, average rating, myopic user-based kNN, kNN bandit, matrix factorization, &epsilon;-greedy and thompson sampling.
+In the above configuration file example, we choose different algorithms ot be run (each with specific parameter settings): popularity, random recommendation, average rating, myopic user-based kNN, kNN bandit, matrix factorization, &epsilon;-greedy and Thompson Sampling.
 
 #### Testing different configurations for the kNN bandit
 To test the different settings for this algorithm, the format of the line to add in the configuration file is:
