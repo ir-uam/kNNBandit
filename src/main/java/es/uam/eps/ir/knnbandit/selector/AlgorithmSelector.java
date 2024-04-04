@@ -22,10 +22,10 @@ import es.uam.eps.ir.knnbandit.recommendation.knn.similarities.VectorCosineSimil
 import es.uam.eps.ir.knnbandit.recommendation.knn.similarities.stochastic.BetaStochasticSimilarity;
 import es.uam.eps.ir.knnbandit.recommendation.knn.user.InteractiveUserBasedKNN;
 import es.uam.eps.ir.knnbandit.recommendation.mf.InteractiveMF;
+import es.uam.eps.ir.knnbandit.recommendation.mf.PZTFactorizer;
 import es.uam.eps.ir.ranksys.fast.preference.SimpleFastPreferenceData;
 import es.uam.eps.ir.ranksys.mf.Factorizer;
 import es.uam.eps.ir.ranksys.mf.als.HKVFactorizer;
-import es.uam.eps.ir.ranksys.mf.als.PZTFactorizer;
 import es.uam.eps.ir.ranksys.mf.plsa.PLSAFactorizer;
 import org.ranksys.formats.parsing.Parsers;
 import java.io.BufferedReader;
@@ -434,9 +434,10 @@ public class AlgorithmSelector<U,I>
                 double alphaPZT = new Double(split.get(1));
                 double lambdaPZT = new Double(split.get(2));
                 int numIterpzt = new Integer(split.get(3));
-                cursor+=3;
+                boolean usesZeroes = split.get(4).equalsIgnoreCase("true");
+                cursor+=4;
                 confidence = (double x) -> 1 + alphaPZT*x;
-                factorizer = new PZTFactorizer<>(lambdaPZT, confidence, numIterpzt);
+                factorizer = new PZTFactorizer<>(lambdaPZT, lambdaPZT, confidence, numIterpzt, usesZeroes);
                 break;
             case FactorizerIdentifiers.PLSA:
                 int numIterPLSA = new Integer(split.get(1));

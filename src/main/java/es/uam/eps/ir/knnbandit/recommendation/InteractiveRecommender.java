@@ -183,6 +183,11 @@ public abstract class InteractiveRecommender<U,I>
             isPresent = false;
         }
 
+        if(Double.isNaN(value))
+        {
+            value = 0.0;
+        }
+
         if(!this.ignoreUnknown || isPresent)
         {
             this.updateMethod(uidx, iidx, value);
